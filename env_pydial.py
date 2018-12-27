@@ -1,14 +1,15 @@
+import os
+
 from usersimulator import SimulatedUsersManager
 from utils import Settings, ContextLogger
 from utils.DiaAct import DiaAct
 from ontology import Ontology
-from policy.HDCPolicy import HDCPolicy
 from policy import SummaryAction
 from policy.Policy import TerminalAction, TerminalState
 from ontology import FlatOntologyManager
-import os
 import subprocess
 import os.path
+
 
 TERMINAL_STATE = None
 
@@ -38,7 +39,7 @@ class EnvPydial:
     hub_id = 'simulate'
     forceNullPositive = False
 
-    def __init__(self, config_file="env/env_pydial.cfg", error_rate=0.3, seed=1234):
+    def __init__(self, config_file="env_pydial.cfg", error_rate=0.3, seed=1234):
         # load the setting in the cfg file
         print(os.listdir("."))
         if not os.path.exists(config_file):
@@ -334,43 +335,3 @@ class EnvPydial:
         return flat_belief
 
 
-def gogogo(e):
-    N = 3
-    hangup_frequency = 0.
-    # HDC policy
-    rrr = 0.
-    ccc = 0.
-    for i in range(N):
-        print("----------------")
-        rr = 0.
-        cc = 0.
-        # if i % 10 == 0:
-        #     print(i)
-        end = False
-        s = e.reset()
-        pi = HDCPolicy("CamRestaurants")
-        pi.restart()
-        a = 'hello()'
-        # print a
-        s, r, end, info = e.step(a)
-
-        while not end:
-            a = pi.nextAction(e.current_pydial_state.getDomainState(e.domainString))
-            # print a
-            s, r, end, info = e.step(a, True)
-
-            c = 1. if info["patience_gone"] else 0.
-            rr += r
-            cc += c
-
-        if info["patience_gone"]:
-            hangup_frequency += 1.
-        rrr += rr
-        ccc += cc
-    print(rrr / N, ccc / N)
-    print(hangup_frequency / N)
-
-
-if __name__ == '__main__':
-    e = EnvPydial()
-    gogogo(e)
