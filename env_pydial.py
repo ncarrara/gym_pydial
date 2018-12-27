@@ -1,19 +1,16 @@
 import os
-
 from usersimulator import SimulatedUsersManager
 from utils import Settings, ContextLogger
 from utils.DiaAct import DiaAct
 from ontology import Ontology
 from policy import SummaryAction
-from policy.Policy import TerminalAction, TerminalState
+from policy.Policy import TerminalState
 from ontology import FlatOntologyManager
-import subprocess
 import os.path
-
 
 TERMINAL_STATE = None
 
-logger = ContextLogger.getLogger('')
+logger = ContextLogger.getLogger(__name__)
 
 __author__ = "ncarrara"
 __version__ = Settings.__version__
@@ -39,37 +36,14 @@ class EnvPydial:
     hub_id = 'simulate'
     forceNullPositive = False
 
-    def __init__(self, config_file="env_pydial.cfg", error_rate=0.3, seed=1234):
-        # load the setting in the cfg file
-        print(os.listdir("."))
+    def __init__(self, config_file="config/pydial_benchmarks/env1-hdc-CR.cfg", error_rate=0.3):
         if not os.path.exists(config_file):
             raise Exception(config_file + " not found")
-        # self.seed = Settings.init(config_file=config_file,seed=seed)
-        Settings.load_config(config_file)
-        Settings.load_root()
-        self.change_seed(seed)
+        Settings.init(config_file)
         ContextLogger.createLoggingHandlers(config=Settings.config, use_color=True)
-        self.seed = seed
-
-        # path_ontology = Settings.config.get('GENERAL', "ontology_path")
-        # path_config = Settings.config.get('GENERAL', "config_path")
         self.maxTurns = Settings.config.getint("agent", "maxturns")
-        # print(path_config)
-        # print(path_ontology)
-        # if os.path.exists("ontology"):
-        #     # os.system("rm ontology/ontologies")
-        #     subprocess.call(["rm", "-rf", "ontology"])
-        # if os.path.exists("config"):
-        #     subprocess.call(["rm", "-rf", "config"])
-
-        # os.mkdir("ontology")
-        # subprocess.call(["ln", "-s", path_ontology, "ontology"])
-        # subprocess.call(["ln", "-s", path_config])
-        # print Ontology.global_ontology
         Ontology.init_global_ontology()
-
         domainString = Settings.config.get('GENERAL', "domains")
-
         self.domainString = domainString
         self.domainUtils = FlatOntologyManager.FlatDomainOntology(domainString)
         if self.domainUtils.domainString == 'CamRestaurants':
@@ -92,19 +66,10 @@ class EnvPydial:
         self.evaluation_manager = self.load_manager('evaluationmanager',
                                                     'evaluation.EvaluationManager.'
                                                     'EvaluationManager')
-        # self.true_turn = 0
-        # self.new_style = None
 
-    def change_seed(self, seed):
-        logger.info("Random Seed is {}".format(seed))
-        print("Random Seed is {}".format(seed))
-        Settings.set_seed(seed)
-
-    # @abc.abstractmethod
     def action_space(self):
         return self.summaryaction.action_names
 
-    # @abc.abstractmethod
     def action_space_str(self):
         return self.summaryaction.action_names
 
@@ -125,8 +90,7 @@ class EnvPydial:
                                                                                  dstring=self.domainString,
                                                                                  turn=self.currentTurn,
                                                                                  hub_id=self.hub_id)
-        # if self.new_style:
-        self.system_summary_acts = []  # le dernier act amene dans s_=None donc pas besoin de save maxTurn
+        self.system_summary_acts = []
         self.system_master_acts = []
         self.user_acts = []
         self.current_state = self.flatten_state(self.current_pydial_state) \
@@ -145,7 +109,6 @@ class EnvPydial:
         }
         return self.current_state
 
-    # @abc.abstractmethod
     def step(self, a, is_master_act=False):
         if not self.endingDialogue:
             if is_master_act:
@@ -166,9 +129,7 @@ class EnvPydial:
                                                                                   turn=self.currentTurn,
                                                                                   hub_id=self.hub_id,
                                                                                   sim_lvl=self.sim_level)
-            # print self.next_pydial_state.getDomainState(self.domainString)
-            #
-            outofturns = (self.currentTurn + 1) >= self.maxTurns  # = self.maxTurns  # (self.maxTurns - 1)
+            outofturns = (self.currentTurn + 1) >= self.maxTurns
             self.endingDialogue = 'bye' == self.sys_act.act or outofturns or 'bye' == user_act.act
             if self.endingDialogue:
                 reward = self._evaluate_final_reward()
@@ -192,8 +153,6 @@ class EnvPydial:
             self.prev_sys_act = self.sys_act
             self.current_pydial_state = self.next_pydial_state
             self.current_state = self.next_state
-
-            # info["master acts"] = self.master_acts
 
             info["state_is_absorbing"] = self.endingDialogue
             info["patience_gone"] = self.simulator.um.goal.patience < 1.
@@ -264,12 +223,8 @@ class EnvPydial:
         except ImportError as e:
             logger.error('Manager "{}" could not be loaded: {}'.format(manager, e))
 
-    # def change_style(self, new_style):
-    #     self.new_style = new_style
 
-    # @abc.abstractmethod
-
-    def action_space_executable(self):  # , beliefstate, lastSystemAction):
+    def action_space_executable(self):
         beliefstate = self.current_pydial_state
         lastSystemAction = self.prev_sys_act
         beliefstate = beliefstate.getDomainState(self.domainUtils.domainString)
@@ -277,7 +232,7 @@ class EnvPydial:
         return list(set(self.action_space()) - set(nonExec))
 
     def _summary_act_to_master_act(self, beliefstate, summaryAct, str_lastSystemAction):
-        if summaryAct == u"hello()":
+        if summaryAct == "hello()":
             masterAct = summaryAct
         else:
             masterAct = self.summaryaction.Convert(beliefstate, summaryAct, str_lastSystemAction)
@@ -333,5 +288,3 @@ class EnvPydial:
             flat_belief += add_feature
 
         return flat_belief
-
-
