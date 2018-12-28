@@ -1,6 +1,6 @@
 # gym_pydial
 
-A gym wrapper for pydial. Only single domain dialogue is supported. Works with python 3.
+A gym wrapper for pydial (http://www.camdial.org/pydial/). Only single domain dialogue is supported. Works with python 3.
 
 Clone pydial repository, switch it to python 3, remove useless files for gym envionment:
 
