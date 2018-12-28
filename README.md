@@ -1,6 +1,6 @@
 # gym_pydial
 
-Warning : this is higly experimental.
+Warning : this is highly experimental.
 
 A gym wrapper for pydial (http://www.camdial.org/pydial/). Only single domain dialogue is supported. Works with python 3.
 
