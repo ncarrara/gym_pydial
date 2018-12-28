@@ -1,5 +1,5 @@
-from env_pydial import EnvPydial
-from policy.HDCPolicy import HDCPolicy
+from pydial3.env_pydial import EnvPydial
+from pydial3.policy.HDCPolicy import HDCPolicy
 
 e = EnvPydial(config_file="config/pydial_benchmarks/env1-hdc-CR.cfg", error_rate=0.3)
 N = 5
