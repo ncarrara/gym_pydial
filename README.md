@@ -5,7 +5,7 @@ A gym wrapper for pydial. Only single domain dialogue is supported. Works with p
 Clone pydial repository, switch it to python 3, remove useless files for gym envionment:
 
 ```
-sh create_sources.sh
+sh import_pydial.sh
 ```
 
 
@@ -24,6 +24,5 @@ python setup.py install
 Test :
 
 ```
-python -c "import gym_pydial.env.env_pydial"
-python env/test_gym_pydial.py
+python -c "import gym_pydial.env.test_env_pydial"
 ```
