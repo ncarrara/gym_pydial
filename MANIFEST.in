@@ -1,0 +1,3 @@
+include ontology/ontologies/*
+include config/*
+include config/pydial_benchmarls/*

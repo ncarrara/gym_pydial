@@ -8,6 +8,7 @@ from policy import SummaryAction
 from policy.Policy import TerminalState
 from ontology import FlatOntologyManager
 import os.path
+import pkg_resources
 
 TERMINAL_STATE = None
 
@@ -38,7 +39,10 @@ class EnvPydial:
     forceNullPositive = False
 
     def __init__(self, config_file="config/pydial_benchmarks/env1-hdc-CR.cfg", error_rate=0.3):
+
+
         if not os.path.exists(config_file):
+            print(os.listdir())
             raise Exception(config_file + " not found")
         Settings.init(config_file)
         ContextLogger.createLoggingHandlers(config=Settings.config, use_color=True)

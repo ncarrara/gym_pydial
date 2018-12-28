@@ -10,4 +10,5 @@ setup(name='gym_pydial',
       author_email='nicolas.carrara1u@gmail.com',
       license='MIT',
       packages=find_packages(),
+      include_package_data=True,
       zip_safe=False)

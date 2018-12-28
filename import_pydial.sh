@@ -15,6 +15,9 @@ rm -rf pydial
 ### some changes have to be manual
 sed -i 's/import dact, copy/import utils\.dact as dact\nimport copy/' utils/DiaAct.py
 
+### db embedded in package
+sed -i "s/ontopath = os\.path\.join('ontology','ontologies')/import pkg_resources;ontopath = pkg_resources\.resource_filename('gym_pydial', 'ontology\/ontologies')/" ontology/OntologyUtils.py
+
 ## no need to run those for gym_pydial
 #find ./ -type f -exec sed -i -e 's/from pydial.\. import. PER\.sum_tree/import policy\.DRL\.PER/g' {} \;
 #find ./ -type f -exec sed -i -e 's/from pydial.\. import. DRL/import policy\.DRL/g' {} \;
