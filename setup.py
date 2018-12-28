@@ -9,5 +9,5 @@ setup(name='gym_pydial',
       author='Nicolas Carrara',
       author_email='nicolas.carrara1u@gmail.com',
       license='MIT',
-      packages=['gym_pydial'],
+      packages=find_packages(),
       zip_safe=False)
