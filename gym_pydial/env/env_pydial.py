@@ -12,9 +12,12 @@ import pkg_resources
 import sys
 import pkg_resources
 
-sys.path.append(pkg_resources.resource_filename('gym_pydial', 'ontology/ontologies'))
-sys.path.append(pkg_resources.resource_filename('gym_pydial', 'config'))
-print("env_pydial sees whose things : {}".format(sys.path))
+# xaxa=pkg_resources.resource_filename('gym_pydial','')
+# print(xaxa)
+
+# sys.path.append(xaxa)
+# sys.path.append(pkg_resources.resource_filename('gym_pydial', 'config'))
+# print("env_pydial sees whose things : \n{}".format("".join([ss+"\n" for ss in sys.path])))
 TERMINAL_STATE = None
 
 logger = ContextLogger.getLogger(__name__)
@@ -44,10 +47,18 @@ class EnvPydial:
     forceNullPositive = False
 
     def __init__(self, config_file="env1-hdc-CR.cfg", error_rate=0.3):
-
+        notfound = []
+        originel = config_file
         if not os.path.exists(config_file):
-            print(os.listdir())
-            raise Exception(config_file + " not found")
+            notfound.append(config_file)
+            config_file = pkg_resources.resource_filename('gym_pydial', '') + "/config/pydial_benchmarks/" + originel
+            if not os.path.exists(config_file):
+                notfound.append(config_file)
+                config_file = pkg_resources.resource_filename('gym_pydial', '') + "/" + originel
+                if not os.path.exists(config_file):
+                    notfound.append(config_file)
+                    raise Exception("config file not found in those folders : \n{}".format("".join([c + "\n" for c in notfound])))
+
         Settings.init(config_file)
         ContextLogger.createLoggingHandlers(config=Settings.config, use_color=True)
         self.maxTurns = Settings.config.getint("agent", "maxturns")

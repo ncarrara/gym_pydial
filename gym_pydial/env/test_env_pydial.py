@@ -2,7 +2,7 @@ from gym_pydial.env.env_pydial import EnvPydial
 
 from policy.HDCPolicy import HDCPolicy
 
-config_file = "env1-hdc-CR.cfg"
+config_file = "config/pydial_benchmarks/env1-hdc-CR.cfg"
 
 e = EnvPydial(config_file=config_file, error_rate=0.3)
 print("Running pydial on benchmark {} with Handcrafted Policy".format(config_file))
