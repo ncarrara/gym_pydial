@@ -43,7 +43,7 @@ class EnvPydial:
     hub_id = 'simulate'
     forceNullPositive = False
 
-    def __init__(self, config_file="config/pydial_benchmarks/env1-hdc-CR.cfg", error_rate=0.3):
+    def __init__(self, config_file="env1-hdc-CR.cfg", error_rate=0.3):
 
         if not os.path.exists(config_file):
             print(os.listdir())
