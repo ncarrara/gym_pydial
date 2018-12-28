@@ -60,7 +60,9 @@ class EnvPydial:
                     raise Exception("config file not found in those folders : \n{}".format("".join([c + "\n" for c in notfound])))
 
         Settings.init(config_file)
+        # ContextLogger.createLoggingHandlers(config=Settings.config, use_color=True)
         ContextLogger.createLoggingHandlers(config=Settings.config, use_color=True)
+        self.cl = ContextLogger.cl
         self.maxTurns = Settings.config.getint("agent", "maxturns")
         Ontology.init_global_ontology()
         domainString = Settings.config.get('GENERAL', "domains")
