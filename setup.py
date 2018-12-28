@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 # cp this file to pydial git folder, then use the command "python setup.py install" in the shell.
 
-setup(name='gympydial',
+setup(name='gym_pydial',
       version='0.0.0',
       description='gym wrapper for single domain pydial',
       url='https://github.com/ncarrara/gym_pydial',
