@@ -9,7 +9,11 @@ from policy.Policy import TerminalState
 from ontology import FlatOntologyManager
 import os.path
 import pkg_resources
+import sys
+import pkg_resources
 
+sys.path.append(pkg_resources.resource_filename('gym_pydial', 'ontology/ontologies'))
+print("env_pydial sees whose things : {}".format(sys.path))
 TERMINAL_STATE = None
 
 logger = ContextLogger.getLogger(__name__)
@@ -39,7 +43,6 @@ class EnvPydial:
     forceNullPositive = False
 
     def __init__(self, config_file="config/pydial_benchmarks/env1-hdc-CR.cfg", error_rate=0.3):
-
 
         if not os.path.exists(config_file):
             print(os.listdir())
@@ -227,7 +230,6 @@ class EnvPydial:
             return klass()
         except ImportError as e:
             logger.error('Manager "{}" could not be loaded: {}'.format(manager, e))
-
 
     def action_space_executable(self):
         beliefstate = self.current_pydial_state
