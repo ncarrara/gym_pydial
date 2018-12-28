@@ -2,7 +2,10 @@ from gym_pydial.env.env_pydial import EnvPydial
 
 from policy.HDCPolicy import HDCPolicy
 
-e = EnvPydial(config_file="config/pydial_benchmarks/env1-hdc-CR.cfg", error_rate=0.3)
+config_file = "config/pydial_benchmarks/env1-hdc-CR.cfg"
+
+e = EnvPydial(config_file=config_file, error_rate=0.3)
+print("Runing pydial on benchmark {} with Handcrafted Policy".format(config_file))
 N = 5
 hangup_frequency = 0.
 rrr = 0.
@@ -26,5 +29,5 @@ for i in range(N):
         hangup_frequency += 1.
     rrr += rr
     ccc += cc
-print(rrr / N, ccc / N)
-print(hangup_frequency / N)
+print("rewards : {} constraint: {}".format(rrr / N, ccc / N))
+print("hangup frequency : {}".format(hangup_frequency / N))
