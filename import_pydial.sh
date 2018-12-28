@@ -1,7 +1,6 @@
 #!/usr/bin/sh
 
 git clone https://bitbucket.org/dialoguesystems/pydial.git
-cp -r ../pydial .
 rm pydial/*
 rm -rf pydial/Tutorials
 rm -rf pydial/Docs
