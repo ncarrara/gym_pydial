@@ -1,11 +1,12 @@
 import os
-from pydial3.usersimulator import SimulatedUsersManager
-from pydial3.utils import Settings, ContextLogger
-from pydial3.utils.DiaAct import DiaAct
-from pydial3.ontology import Ontology
-from pydial3.policy import SummaryAction
-from pydial3.policy.Policy import TerminalState
-from pydial3.ontology import FlatOntologyManager
+
+from gym_pydial.usersimulator import SimulatedUsersManager
+from gym_pydial.utils import Settings, ContextLogger
+from gym_pydial.utils.DiaAct import DiaAct
+from gym_pydial.ontology import Ontology
+from gym_pydial.policy import SummaryAction
+from gym_pydial.policy.Policy import TerminalState
+from gym_pydial.ontology import FlatOntologyManager
 import os.path
 
 TERMINAL_STATE = None
