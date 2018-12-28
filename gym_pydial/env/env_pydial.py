@@ -13,6 +13,7 @@ import sys
 import pkg_resources
 
 sys.path.append(pkg_resources.resource_filename('gym_pydial', 'ontology/ontologies'))
+sys.path.append(pkg_resources.resource_filename('gym_pydial', 'config'))
 print("env_pydial sees whose things : {}".format(sys.path))
 TERMINAL_STATE = None
 
