@@ -15,6 +15,12 @@ Download dependencies
 pip install -r requirements.txt
 ```
 
+Install package localy:
+
+```
+python setup.py install
+```
+
 Test :
 
 ```
