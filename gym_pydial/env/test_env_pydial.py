@@ -1,6 +1,5 @@
 from gym_pydial.env.env_pydial import EnvPydial
-
-from policy.HDCPolicy import HDCPolicy
+from gym_pydial.pydial.policy.HDCPolicy import HDCPolicy
 
 config_file = "config/pydial_benchmarks/env1-hdc-CR.cfg"
 

@@ -1,12 +1,12 @@
 import os
 
-from usersimulator import SimulatedUsersManager
-from utils import Settings, ContextLogger
-from utils.DiaAct import DiaAct
-from ontology import Ontology
-from policy import SummaryAction
-from policy.Policy import TerminalState
-from ontology import FlatOntologyManager
+from gym_pydial.pydial.usersimulator import SimulatedUsersManager
+from gym_pydial.pydial.utils import Settings, ContextLogger
+from gym_pydial.pydial.utils.DiaAct import DiaAct
+from gym_pydial.pydial.ontology import Ontology
+from gym_pydial.pydial.policy import SummaryAction
+from gym_pydial.pydial.policy.Policy import TerminalState
+from gym_pydial.pydial.ontology import FlatOntologyManager
 import os.path
 import pkg_resources
 import sys
@@ -237,8 +237,9 @@ class EnvPydial:
             manager = Settings.config.get('agent', config)
         try:
             components = manager.split('.')
-            packageString = '.'.join(components[:-1])
+            packageString = 'gym_pydial.pydial.'+'.'.join(components[:-1])
             classString = components[-1]
+            # print(packageString)
             mod = __import__(packageString, fromlist=[classString])
             klass = getattr(mod, classString)
             return klass()

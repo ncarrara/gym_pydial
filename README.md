@@ -4,7 +4,7 @@ Warning : this is highly experimental.
 
 A gym wrapper for pydial (http://www.camdial.org/pydial/). Only single domain dialogue is supported. Works with python 3.
 
-Clone pydial repository, switch it to python 3, remove useless files for gym environment:
+Clone pydial repository, change imports, switch it to python 3, remove useless files for gym environment:
 
 ```
 sh import_pydial.sh
