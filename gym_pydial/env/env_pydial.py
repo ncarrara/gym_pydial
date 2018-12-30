@@ -11,6 +11,7 @@ import pkg_resources
 import random
 import numpy
 import logging
+from gym.spaces.discrete import Discrete
 
 # xaxa=pkg_resources.resource_filename('gym_pydial','')
 # print(xaxa)
@@ -23,10 +24,11 @@ TERMINAL_STATE = None
 __author__ = "ncarrara"
 __version__ = Settings.__version__
 
-ontology_is_loaded = False
-logger = logging.getLogger(__name__)
 
 class EnvPydial:
+    ontology_is_loaded = False
+    logger = logging.getLogger(__name__)
+
     # resetable variables
     currentTurn = None
     next_pydial_state = None
@@ -89,11 +91,11 @@ class EnvPydial:
         Settings.load_root()
         if seed is not None:
             self.seed(seed)
-        if not ontology_is_loaded:
+        if not EnvPydial.ontology_is_loaded:
             Ontology.init_global_ontology()
-            ontology_is_loaded = True
+            EnvPydial.ontology_is_loaded = True
         else:
-            logger.info("Ontology has already been loaded")
+            EnvPydial.logger.info("Ontology has already been loaded")
 
         self.maxTurns = Settings.config.getint("agent", "maxturns")
         self.domainString = Settings.config.get('GENERAL', "domains")
@@ -107,17 +109,14 @@ class EnvPydial:
         self.evaluation_manager = self.load_manager('evaluationmanager',
                                                     'evaluation.EvaluationManager.'
                                                     'EvaluationManager')
-
+        self.action_space = Discrete(len(self.summaryaction.action_names))
+        self.action_space_str=self.summaryaction.action_names
     def seed(self, seed):
         Settings.set_seed(seed)
         random.seed(seed)
         numpy.random.seed(seed)
 
-    def action_space(self):
-        return self.summaryaction.action_names
 
-    def action_space_str(self):
-        return self.summaryaction.action_names
 
     def reset(self):
         self.simulator.restart(otherDomainsConstraints=[])
@@ -156,12 +155,14 @@ class EnvPydial:
         return self.current_state
 
     def step(self, a, is_master_act=False):
+
         if not self.endingDialogue:
             if is_master_act:
                 masterAct = a
             else:
+                str_a = self.action_space_str[a]
                 beliefstate = self.current_pydial_state.getDomainState(self.domainUtils.domainString)
-                masterAct = self._summary_act_to_master_act(beliefstate, a,
+                masterAct = self._summary_act_to_master_act(beliefstate, str_a,
                                                             None if self.prev_sys_act is None
                                                             else self.prev_sys_act.to_string())
             self.sys_act = DiaAct(masterAct)
@@ -184,7 +185,7 @@ class EnvPydial:
             else:
                 reward = self._evaluate_turn_reward(str_sys_act=self.sys_act.to_string(), state=self.next_pydial_state)
                 if not is_master_act:
-                    self.system_summary_acts.append(a)
+                    self.system_summary_acts.append(str_a)
                 self.system_master_acts.append(self.sys_act.to_string())
                 self.user_acts.append(user_act.to_string())
                 self.next_state = {
