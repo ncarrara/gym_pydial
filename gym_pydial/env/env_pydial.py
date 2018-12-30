@@ -63,7 +63,7 @@ class EnvPydial:
             return 188
 
     def __init__(self, config_file="env1-hdc-CR.cfg", error_rate=0.3,
-                 seed=None, pydial_logging_level="ERROR"):
+                 seed=0, pydial_logging_level="ERROR"):
         """
 
         :param config_file:
@@ -89,8 +89,7 @@ class EnvPydial:
 
         Settings.load_config(config_file)
         Settings.load_root()
-        if seed is not None:
-            self.seed(seed)
+        self.seed(seed)
         if not EnvPydial.ontology_is_loaded:
             Ontology.init_global_ontology()
             EnvPydial.ontology_is_loaded = True
