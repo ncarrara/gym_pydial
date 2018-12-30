@@ -23,6 +23,8 @@ TERMINAL_STATE = None
 __author__ = "ncarrara"
 __version__ = Settings.__version__
 
+ontology_is_loaded = False
+logger = logging.getLogger(__name__)
 
 class EnvPydial:
     # resetable variables
@@ -87,7 +89,12 @@ class EnvPydial:
         Settings.load_root()
         if seed is not None:
             self.seed(seed)
-        Ontology.init_global_ontology()
+        if not ontology_is_loaded:
+            Ontology.init_global_ontology()
+            ontology_is_loaded = True
+        else:
+            logger.info("Ontology has already been loaded")
+
         self.maxTurns = Settings.config.getint("agent", "maxturns")
         self.domainString = Settings.config.get('GENERAL', "domains")
         self.domainUtils = FlatOntologyManager.FlatDomainOntology(self.domainString)
