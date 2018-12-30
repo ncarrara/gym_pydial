@@ -39,6 +39,11 @@ find gym_pydial/pydial -type f -exec sed -i -E "s/^from ontology import Ontology
 #find gym_pydial/pydial -type f -exec sed -i -E "s//gym_pydial\.pydial\./g" {} \;
 
 
+# REMOVING ALL ROOT LOGGER FROM PYDIAL, CHANGING LOGGER NAME TO "PYDIAL"
+#find gym_pydial/pydial -type f -exec sed -i "s/^logger = ContextLogger.getLogger('')/import logging\nlogger = logging.getLogger('pydial')/g" {} \;
+find gym_pydial/pydial -type f -exec sed -i "s/^logger = ContextLogger.getLogger('')/logger = ContextLogger.getLogger('pydial')/g" {} \;
+#find gym_pydial/pydial -type f -exec sed -i "s/logger.dial/logger.debug/g" {} \;
+
 ## convertion to python 3
 2to3  -w -n gym_pydial/pydial
 

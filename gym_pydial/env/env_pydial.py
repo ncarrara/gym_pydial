@@ -58,21 +58,18 @@ class EnvPydial:
         elif domainString == 'TV':
             return 188
 
-    def init_logging(self, logging_level, pydial_logging_level):
-        self.logger = ContextLogger.getLogger(__name__)
-        self.logger.setLevel(logging_level.upper())
-        # ContextLogger.createLoggingHandlers(config=None,
-        #                                     screen_level=pydial_logging_level,
-        #                                     file_level=pydial_logging_level,
-        #                                     log_file="env_pydial.log",
-        #                                     use_color=True)
-        # for name, cl in ContextLogger.cl.items():
-        #     cl.setLevel(pydial_logging_level)
-        logging.basicConfig(level=logging.getLevelName(pydial_logging_level))
+    def __init__(self, config_file="env1-hdc-CR.cfg", error_rate=0.3,
+                 seed=None, pydial_logging_level="ERROR"):
+        """
 
-    def __init__(self, config_file="env1-hdc-CR.cfg", error_rate=0.3, seed=0, logging_level="INFO",
-                 pydial_logging_level="WARNING"):
-        self.init_logging(logging_level, pydial_logging_level)
+        :param config_file:
+        :param error_rate:
+        :param seed: override seed from config file
+        :param pydial_logging_level:
+        """
+
+        logging.getLogger('pydial').setLevel(pydial_logging_level)
+
         notfound = []
         originel = config_file
         if not os.path.exists(config_file):
@@ -88,11 +85,9 @@ class EnvPydial:
 
         Settings.load_config(config_file)
         Settings.load_root()
-        self.seed(seed)
-
+        if seed is not None:
+            self.seed(seed)
         Ontology.init_global_ontology()
-        # self.cl = ContextLogger.cl
-        # print(self.cl)
         self.maxTurns = Settings.config.getint("agent", "maxturns")
         self.domainString = Settings.config.get('GENERAL', "domains")
         self.domainUtils = FlatOntologyManager.FlatDomainOntology(self.domainString)
@@ -107,7 +102,6 @@ class EnvPydial:
                                                     'EvaluationManager')
 
     def seed(self, seed):
-        self.logger.info("Setting seed = {}".format(seed))
         Settings.set_seed(seed)
         random.seed(seed)
         numpy.random.seed(seed)
@@ -261,7 +255,7 @@ class EnvPydial:
             klass = getattr(mod, classString)
             return klass()
         except ImportError as e:
-            self.logger.error('Manager "{}" could not be loaded: {}'.format(manager, e))
+            raise Exception('Manager "{}" could not be loaded: {}'.format(manager, e))
 
     def action_space_executable(self):
         beliefstate = self.current_pydial_state
@@ -322,7 +316,7 @@ class EnvPydial:
             elif feat == 'inform_info':
                 add_feature += state['features']['inform_info']
             else:
-                self.logger.error('Invalid feature name in config: ' + feat)
+                raise Exception('Invalid feature name in config: ' + feat)
 
             flat_belief += add_feature
 

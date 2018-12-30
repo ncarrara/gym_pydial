@@ -1,17 +1,19 @@
 from gym_pydial.env.env_pydial import EnvPydial
 from gym_pydial.pydial.policy.HDCPolicy import HDCPolicy
 import numpy as np
-import logging
-logger = logging.getLogger(__name__)
-logger.setLevel("INFO")
-config_file = "config/pydial_benchmarks/env1-hdc-CR.cfg"
 
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+logger = logging.getLogger("run_env_pydial")
+
+config_file = "config/pydial_benchmarks/env1-hdc-CR.cfg"
+#
 e = EnvPydial(config_file=config_file,
               error_rate=0.3,
               seed=1,
-              logging_level="ERROR",
               pydial_logging_level="ERROR")
-
 rr = 0.
 end = False
 s = e.reset()
