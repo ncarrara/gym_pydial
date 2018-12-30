@@ -19,7 +19,7 @@ end = False
 s = e.reset()
 s, r, end, info = e.step(e.action_space_str.index('hello()'))
 while not end:
-    a = np.random.choice(e.action_space())
+    a = e.action_space.sample()
     s, r, end, info = e.step(a)
     rr += r
 
