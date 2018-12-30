@@ -110,7 +110,7 @@ class EnvPydial:
                                                     'evaluation.EvaluationManager.'
                                                     'EvaluationManager')
         self.action_space = Discrete(1 + len(self.summaryaction.action_names))
-        self.action_space_str = ['hello()'] + self.summaryaction.action_names
+        self.action_space_str = ['hello'] + self.summaryaction.action_names
 
     def seed(self, seed):
         Settings.set_seed(seed)
@@ -159,11 +159,13 @@ class EnvPydial:
             if is_master_act:
                 masterAct = a
             else:
+
                 str_a = self.action_space_str[a]
                 beliefstate = self.current_pydial_state.getDomainState(self.domainUtils.domainString)
                 masterAct = self._summary_act_to_master_act(beliefstate, str_a,
-                                                            None if self.prev_sys_act is None
-                                                            else self.prev_sys_act.to_string())
+                                                        None if self.prev_sys_act is None
+                                                        else self.prev_sys_act.to_string())
+                # print(str_a,masterAct)
             self.sys_act = DiaAct(masterAct)
             info = {}
 
@@ -269,13 +271,21 @@ class EnvPydial:
         lastSystemAction = self.prev_sys_act
         beliefstate = beliefstate.getDomainState(self.domainUtils.domainString)
         nonExec = self.summaryaction.getNonExecutable(beliefstate, lastSystemAction)
-        return list(set(self.action_space()) - set(nonExec))
+        exec_str= list(set(self.action_space_str) - set(nonExec))
+        exec=[]
+        for act in exec_str:
+            exec.append(self.action_space_str.index(act))
+        return exec
 
     def _summary_act_to_master_act(self, beliefstate, summaryAct, str_lastSystemAction):
-        if summaryAct == "hello()":
+        if summaryAct == "hello":
             masterAct = summaryAct
         else:
             masterAct = self.summaryaction.Convert(beliefstate, summaryAct, str_lastSystemAction)
+        if masterAct is None:
+            EnvPydial.logger.warning("[_summary_act_to_master_act] A masteract is None, summaryAct={} str_lastSystemAction={}".format(summaryAct,str_lastSystemAction))
+            masterAct="null()"
+
         return masterAct
 
     def flatten_state(self, state):
