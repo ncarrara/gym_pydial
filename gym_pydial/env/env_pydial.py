@@ -109,14 +109,13 @@ class EnvPydial:
         self.evaluation_manager = self.load_manager('evaluationmanager',
                                                     'evaluation.EvaluationManager.'
                                                     'EvaluationManager')
-        self.action_space = Discrete(len(self.summaryaction.action_names))
-        self.action_space_str=self.summaryaction.action_names
+        self.action_space = Discrete(1 + len(self.summaryaction.action_names))
+        self.action_space_str = ['hello()'] + self.summaryaction.action_names
+
     def seed(self, seed):
         Settings.set_seed(seed)
         random.seed(seed)
         numpy.random.seed(seed)
-
-
 
     def reset(self):
         self.simulator.restart(otherDomainsConstraints=[])

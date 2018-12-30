@@ -17,8 +17,7 @@ e = EnvPydial(config_file=config_file,
 rr = 0.
 end = False
 s = e.reset()
-a = 'hello()'
-s, r, end, info = e.step(a)
+s, r, end, info = e.step(e.action_space_str.index('hello()'))
 while not end:
     a = np.random.choice(e.action_space())
     s, r, end, info = e.step(a)
@@ -31,8 +30,7 @@ rr = 0.
 end = False
 s = e.reset()
 pi.restart()
-a = 'hello()'
-s, r, end, info = e.step(a)
+s, r, end, info = e.step(e.action_space_str.index('hello()'))
 while not end:
     a = pi.nextAction(e.current_pydial_state.getDomainState(e.domainString))
     s, r, end, info = e.step(a, is_master_act=True)
