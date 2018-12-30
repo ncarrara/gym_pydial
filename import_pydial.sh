@@ -2,6 +2,7 @@
 
 git clone https://bitbucket.org/dialoguesystems/pydial.git
 mv pydial gym_pydial/
+rm -rf gym_pydial/pydial/.git
 #cp -r pydial pydial.back
 #rm -rf gym_pydial/pydial
 #cp -r pydial.back gym_pydial/pydial

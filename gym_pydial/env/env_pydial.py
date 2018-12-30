@@ -1,5 +1,4 @@
 import os
-
 from gym_pydial.pydial.usersimulator import SimulatedUsersManager
 from gym_pydial.pydial.utils import Settings, ContextLogger
 from gym_pydial.pydial.utils.DiaAct import DiaAct
@@ -9,8 +8,9 @@ from gym_pydial.pydial.policy.Policy import TerminalState
 from gym_pydial.pydial.ontology import FlatOntologyManager
 import os.path
 import pkg_resources
-import sys
-import pkg_resources
+import random
+import numpy
+import logging
 
 # xaxa=pkg_resources.resource_filename('gym_pydial','')
 # print(xaxa)
@@ -19,8 +19,6 @@ import pkg_resources
 # sys.path.append(pkg_resources.resource_filename('gym_pydial', 'config'))
 # print("env_pydial sees whose things : \n{}".format("".join([ss+"\n" for ss in sys.path])))
 TERMINAL_STATE = None
-
-logger = ContextLogger.getLogger(__name__)
 
 __author__ = "ncarrara"
 __version__ = Settings.__version__
@@ -46,7 +44,35 @@ class EnvPydial:
     hub_id = 'simulate'
     forceNullPositive = False
 
-    def __init__(self, config_file="env1-hdc-CR.cfg", error_rate=0.3):
+    def size_belief_vector(self, domainString):
+        if domainString == 'CamRestaurants':
+            return 268
+        elif domainString == 'CamHotels':
+            return 111
+        elif domainString == 'SFRestaurants':
+            return 633
+        elif domainString == 'SFHotels':
+            return 438
+        elif domainString == 'Laptops11':
+            return 257
+        elif domainString == 'TV':
+            return 188
+
+    def init_logging(self, logging_level, pydial_logging_level):
+        self.logger = ContextLogger.getLogger(__name__)
+        self.logger.setLevel(logging_level.upper())
+        # ContextLogger.createLoggingHandlers(config=None,
+        #                                     screen_level=pydial_logging_level,
+        #                                     file_level=pydial_logging_level,
+        #                                     log_file="env_pydial.log",
+        #                                     use_color=True)
+        # for name, cl in ContextLogger.cl.items():
+        #     cl.setLevel(pydial_logging_level)
+        logging.basicConfig(level=logging.getLevelName(pydial_logging_level))
+
+    def __init__(self, config_file="env1-hdc-CR.cfg", error_rate=0.3, seed=0, logging_level="INFO",
+                 pydial_logging_level="WARNING"):
+        self.init_logging(logging_level, pydial_logging_level)
         notfound = []
         originel = config_file
         if not os.path.exists(config_file):
@@ -57,29 +83,20 @@ class EnvPydial:
                 config_file = pkg_resources.resource_filename('gym_pydial', '') + "/" + originel
                 if not os.path.exists(config_file):
                     notfound.append(config_file)
-                    raise Exception("config file not found in those folders : \n{}".format("".join([c + "\n" for c in notfound])))
+                    raise Exception(
+                        "config file not found in those folders : \n{}".format("".join([c + "\n" for c in notfound])))
 
-        Settings.init(config_file)
-        # ContextLogger.createLoggingHandlers(config=Settings.config, use_color=True)
-        ContextLogger.createLoggingHandlers(config=Settings.config, use_color=True)
-        self.cl = ContextLogger.cl
-        self.maxTurns = Settings.config.getint("agent", "maxturns")
+        Settings.load_config(config_file)
+        Settings.load_root()
+        self.seed(seed)
+
         Ontology.init_global_ontology()
-        domainString = Settings.config.get('GENERAL', "domains")
-        self.domainString = domainString
-        self.domainUtils = FlatOntologyManager.FlatDomainOntology(domainString)
-        if self.domainUtils.domainString == 'CamRestaurants':
-            self.size_pydial_state = 268
-        elif self.domainUtils.domainString == 'CamHotels':
-            self.size_pydial_state = 111
-        elif self.domainUtils.domainString == 'SFRestaurants':
-            self.size_pydial_state = 633
-        elif self.domainUtils.domainString == 'SFHotels':
-            self.size_pydial_state = 438
-        elif self.domainUtils.domainString == 'Laptops11':
-            self.size_pydial_state = 257
-        elif self.domainUtils.domainString == 'TV':
-            self.size_pydial_state = 188
+        # self.cl = ContextLogger.cl
+        # print(self.cl)
+        self.maxTurns = Settings.config.getint("agent", "maxturns")
+        self.domainString = Settings.config.get('GENERAL', "domains")
+        self.domainUtils = FlatOntologyManager.FlatDomainOntology(self.domainString)
+        self.size_pydial_state = self.size_belief_vector(self.domainString)
         self.summaryaction = SummaryAction.SummaryAction(self.domainString)
         self.simulator = SimulatedUsersManager.DomainsSimulatedUser(self.domainString, error_rate)
         self.semi_belief_manager = self.load_manager('semanticbelieftrackingmanager',
@@ -88,6 +105,12 @@ class EnvPydial:
         self.evaluation_manager = self.load_manager('evaluationmanager',
                                                     'evaluation.EvaluationManager.'
                                                     'EvaluationManager')
+
+    def seed(self, seed):
+        self.logger.info("Setting seed = {}".format(seed))
+        Settings.set_seed(seed)
+        random.seed(seed)
+        numpy.random.seed(seed)
 
     def action_space(self):
         return self.summaryaction.action_names
@@ -187,10 +210,6 @@ class EnvPydial:
             raise Exception("dialogue ended, please reset the environment")
 
     def _confuse_user_act_and_enforce_null(self, user_act):
-        '''Simulate errors in the semantic parses. Returns a set of confused hypotheses.
-        Also enforces a null() act if config set to do so.
-        '''
-        # Confused user act.
         hyps = self.simulator.error_simulator.confuse_act(user_act)
         null_prob = 0.0
         for h in hyps:
@@ -198,12 +217,10 @@ class EnvPydial:
             prob = h.P_Au_O
             if act == 'null()':
                 null_prob += prob
-            logger.info('| Semi > %s [%.6f]' % (act, prob))
         if self.forceNullPositive and null_prob < 0.001:
             nullAct = DiaAct.DiaActWithProb('null()')
             nullAct.P_Au_O = 0.001
             hyps.append(nullAct)
-            logger.info('   Semi > null() [0.001]')
         return hyps
 
     def _evaluate_final_reward(self):
@@ -237,14 +254,14 @@ class EnvPydial:
             manager = Settings.config.get('agent', config)
         try:
             components = manager.split('.')
-            packageString = 'gym_pydial.pydial.'+'.'.join(components[:-1])
+            packageString = 'gym_pydial.pydial.' + '.'.join(components[:-1])
             classString = components[-1]
             # print(packageString)
             mod = __import__(packageString, fromlist=[classString])
             klass = getattr(mod, classString)
             return klass()
         except ImportError as e:
-            logger.error('Manager "{}" could not be loaded: {}'.format(manager, e))
+            self.logger.error('Manager "{}" could not be loaded: {}'.format(manager, e))
 
     def action_space_executable(self):
         beliefstate = self.current_pydial_state
@@ -305,7 +322,7 @@ class EnvPydial:
             elif feat == 'inform_info':
                 add_feature += state['features']['inform_info']
             else:
-                logger.error('Invalid feature name in config: ' + feat)
+                self.logger.error('Invalid feature name in config: ' + feat)
 
             flat_belief += add_feature
 

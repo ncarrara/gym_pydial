@@ -27,4 +27,12 @@ Test :
 
 ```
 python -c "import gym_pydial.env.test_env_pydial"
+
 ```
+
+You should see:
+```
+INFO:gym_pydial.env.test_env_pydial:Random policy reward : -2.0 
+INFO:gym_pydial.env.test_env_pydial:HDC policy reward : 17.0
+```
+The HDC policy reward is not always the same (cf ticket seed)
