@@ -63,7 +63,7 @@ class EnvPydial:
             return 188
 
     def __init__(self, config_file="env1-hdc-CR.cfg", error_rate=0.3,
-                 seed=0, pydial_logging_level="ERROR"):
+                 seed=0,turn_reward=-1., pydial_logging_level="ERROR"):
         """
 
         :param config_file:
@@ -87,6 +87,7 @@ class EnvPydial:
                     raise Exception(
                         "config file not found in those folders : \n{}".format("".join([c + "\n" for c in notfound])))
 
+        self.turn_reward=turn_reward
         Settings.load_config(config_file)
         Settings.load_root()
         self.seed(seed)
@@ -241,8 +242,8 @@ class EnvPydial:
         turnInfo['prev_sys_act'] = self.prev_sys_act
         turnInfo['usermodel'] = self.simulator.um
         reward = self.evaluation_manager.turnReward(turnInfo=turnInfo, domainString=self.domainString)
-        # if reward == -1.:
-        #     reward = 0
+        if reward == -1.:
+            reward = self.turn_reward
         #     print "to remove, changing reward"
         return reward
 
