@@ -143,11 +143,11 @@ class EnvPydial:
                              + self.user_acts + [self.currentTurn]
 
         self.current_state = {
-            "flatten": self.flatten_state(self.current_pydial_state),
-            "system_summary_acts": self.system_summary_acts,
-            "system_master_acts": self.system_master_acts,
-            "user_acts": self.user_acts,
-            "pydial_state": self.current_pydial_state.getDomainState(self.domainString),
+            "flatten": self.flatten_state(self.current_pydial_state).copy(),
+            "system_summary_acts": self.system_summary_acts.copy(),
+            "system_master_acts": self.system_master_acts.copy(),
+            "user_acts": self.user_acts.copy(),
+            # "pydial_state": self.current_pydial_state.getDomainState(self.domainString),
             "turn": self.currentTurn
 
         }
@@ -190,11 +190,11 @@ class EnvPydial:
                 self.system_master_acts.append(self.sys_act.to_string())
                 self.user_acts.append(user_act.to_string())
                 self.next_state = {
-                    "flatten": self.flatten_state(self.next_pydial_state),
-                    "system_summary_acts": self.system_summary_acts,
-                    "system_master_acts": self.system_master_acts,
-                    "user_acts": self.user_acts,
-                    "pydial_state": self.next_pydial_state.getDomainState(self.domainString),
+                    "flatten": self.flatten_state(self.next_pydial_state).copy(),
+                    "system_summary_acts": self.system_summary_acts.copy(),
+                    "system_master_acts": self.system_master_acts.copy(),
+                    "user_acts": self.user_acts.copy(),
+                    # "pydial_state": self.next_pydial_state.getDomainState(self.domainString),
                     "turn": self.currentTurn + 1
 
                 }
