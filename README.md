@@ -1,4 +1,4 @@
-# gym_pydial
+# gym_pydial [DEPRECATED]
 
 Warning : this is highly experimental.
 
